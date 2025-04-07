@@ -24,11 +24,16 @@ db = SQLAlchemy(app)
 # Initialize migration extension (Migrate)
 migrate = Migrate(app, db)
 
-# --- Define Database Models (We'll add the first one in the next step) ---
-# Example structure:
-# class YourModelName(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     # other columns...
+# --- Define Database Models ---
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password_hash = db.Column(db.String(128))
+    # Add other fields later if you need them
+
+    def __repr__(self):
+        return f'<User {self.username}>'
 
 # --- Define Routes ---
 @app.route('/')
