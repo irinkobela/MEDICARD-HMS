@@ -49,7 +49,6 @@ except ImportError:
     print("NOTE: Dashboard blueprint not found or not imported.")
     pass
 
-
 # --- Main execution block ---
 if __name__ == '__main__':
     # Debug mode is handled by FLASK_ENV=development in .env
