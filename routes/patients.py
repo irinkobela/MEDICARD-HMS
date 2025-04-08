@@ -1,9 +1,12 @@
-# routes/patients.py (Restored Logic with Correct Routing)
+# routes/patients.py (Complete version with Marshmallow)
 
 from flask import Blueprint, request, jsonify
 from models.models import Patient  # Import the Patient model
 from extensions import db          # Import the db instance
 from datetime import date
+from sqlalchemy import or_         # Import 'or_' for searching
+from schemas import patient_schema, patients_schema # Import Marshmallow schemas
+from marshmallow import ValidationError          # Import validation error
 
 # Define blueprint WITHOUT url_prefix here
 patients_bp = Blueprint('patients', __name__)
@@ -12,63 +15,80 @@ patients_bp = Blueprint('patients', __name__)
 @patients_bp.route('/patients', methods=['GET', 'POST'])
 def handle_patients():
     if request.method == 'POST':
-        # --- Create a new patient ---
-        data = request.get_json()
+        # --- Create a new patient using Marshmallow ---
+        json_data = request.get_json()
+        if not json_data:
+            return jsonify({"error": "No input data provided"}), 400
 
-        required_fields = ['mrn', 'first_name', 'last_name', 'dob', 'sex']
-        if not data or not all(field in data for field in required_fields):
-            return jsonify({"error": "Missing required fields (mrn, first_name, last_name, dob, sex)"}), 400
-
+        # Validate and deserialize input using the schema
         try:
-            dob_date = date.fromisoformat(data['dob'])
-        except (ValueError, TypeError):
-            return jsonify({"error": "Invalid date format for dob. Use YYYY-MM-DD."}), 400
+            # .load() validates and creates a Patient instance because load_instance=True in schema Meta
+            # Pass session for potential uniqueness checks or relationship loading if needed later
+            new_patient = patient_schema.load(json_data, session=db.session)
 
-        if Patient.query.filter_by(mrn=data['mrn']).first():
-             return jsonify({"error": f"Patient with MRN {data['mrn']} already exists."}), 409
+            # Check MRN uniqueness (schema doesn't check DB unique constraints automatically on load)
+            # It's safer to do this check before adding to session if MRN isn't the primary key
+            if Patient.query.filter_by(mrn=new_patient.mrn).first():
+                return jsonify({"error": f"Patient with MRN {new_patient.mrn} already exists."}), 409 # 409 Conflict
 
             db.session.add(new_patient)
             db.session.commit()
-            # Return the created patient's data
+
+            # Serialize the created patient back to JSON for the response using schema.dump()
             return jsonify({
                 "message": "Patient created successfully",
-                "patient": {
-                    "id": new_patient.id,
-                    "mrn": new_patient.mrn,
-                    # "name": new_patient.name, # If using combined name
-                    "first_name": new_patient.first_name,
-                    "last_name": new_patient.last_name,
-                    "dob": new_patient.dob.isoformat(),
-                    "sex": new_patient.sex,
-                    "location_bed": new_patient.location_bed # Example optional field
-                }
-            }), 201
+                "patient": patient_schema.dump(new_patient)
+            }), 201 # 201 Created status code
+
+        except ValidationError as err:
+            # Return validation errors provided by Marshmallow
+            return jsonify({"errors": err.messages}), 400 # 400 Bad Request status code
         except Exception as e:
             db.session.rollback()
-            print(f"Database error: {e}") # Print error to console
+            print(f"Database error creating patient: {e}") # Log error server-side
             return jsonify({"error": "Database error occurred"}), 500
 
     elif request.method == 'GET':
-        # --- Get list of all patients ---
+        # --- Get list of patients with Search and Pagination using Marshmallow ---
         try:
-            all_patients = Patient.query.order_by(Patient.last_name, Patient.first_name).all()
-            patient_list = []
-            for patient in all_patients:
-                patient_list.append({
-                    "id": patient.id,
-                    "mrn": patient.mrn,
-                    "first_name": patient.first_name,
-                    "last_name": patient.last_name,
-                    "dob": patient.dob.isoformat(),
-                    "sex": patient.sex,
-                    "location_bed": patient.location_bed # Example optional field
-                })
-            return jsonify(patient_list), 200
+            page = request.args.get('page', 1, type=int)
+            per_page = request.args.get('per_page', 20, type=int)
+            search_term = request.args.get('search', None, type=str)
+
+            query = Patient.query
+
+            if search_term:
+                search_pattern = f"%{search_term}%"
+                query = query.filter(
+                    or_(
+                        Patient.mrn.ilike(search_pattern),
+                        Patient.first_name.ilike(search_pattern),
+                        Patient.last_name.ilike(search_pattern)
+                    )
+                )
+
+            query = query.order_by(Patient.last_name, Patient.first_name)
+
+            pagination = query.paginate(page=page, per_page=per_page, error_out=False)
+            patients_on_page = pagination.items
+
+            # Serialize the list of patients using the schema (many=True)
+            result = patients_schema.dump(patients_on_page)
+
+            response = {
+                "results": result, # Use the serialized result
+                "page": pagination.page,
+                "per_page": pagination.per_page,
+                "total_pages": pagination.pages,
+                "total_items": pagination.total
+            }
+            return jsonify(response), 200
+
         except Exception as e:
-            print(f"Database error: {e}") # Print error to console
-            return jsonify({"error": "Database error occurred"}), 500
+            print(f"Database error listing patients: {e}")
+            return jsonify({"error": "An error occurred listing patients"}), 500
 
-
+# Route to GET a specific patient by MRN
 @patients_bp.route('/patients/<string:mrn>', methods=['GET'])
 def get_patient_by_mrn(mrn):
     """Get details for a single patient by their MRN."""
@@ -77,77 +97,58 @@ def get_patient_by_mrn(mrn):
             description=f"Patient with MRN {mrn} not found."
         )
 
-        # If found, format the patient's data into a dictionary
-        patient_data = {
-            "id": patient.id,
-            "mrn": patient.mrn,
-            "first_name": patient.first_name,
-            "last_name": patient.last_name,
-            "dob": patient.dob.isoformat(), # Format date as string
-            "sex": patient.sex,
-            "location_bed": patient.location_bed,
-            "primary_diagnosis_summary": patient.primary_diagnosis_summary,
-            "code_status": patient.code_status,
-            "isolation_status": patient.isolation_status,
-            "attending_id": patient.attending_id
-            # Add other fields from your Patient model as needed
-        }
-        # Return the data as JSON with a 200 OK status
-        return jsonify(patient_data), 200
+        # Serialize the patient object using the schema
+        result = patient_schema.dump(patient)
+        return jsonify(result), 200
 
     except Exception as e:
         print(f"Database error fetching patient {mrn}: {e}")
         return jsonify({"error": "An error occurred retrieving patient data"}), 500
-    
-# --- ADD THIS NEW FUNCTION FOR UPDATING (PUT) ---
+
+# Route to UPDATE a specific patient by MRN
 @patients_bp.route('/patients/<string:mrn>', methods=['PUT'])
 def update_patient(mrn):
-    """Update details for an existing patient by MRN."""
+    """Update details for an existing patient by MRN using Marshmallow."""
     try:
         patient = Patient.query.filter_by(mrn=mrn).first_or_404(
             description=f"Patient with MRN {mrn} not found. Cannot update."
         )
 
-        data = request.get_json()
-        if not data:
+        json_data = request.get_json()
+        if not json_data:
             return jsonify({"error": "No input data provided"}), 400
 
-        # Update fields using data.get() to allow partial updates
-        patient.first_name = data.get('first_name', patient.first_name)
-        patient.last_name = data.get('last_name', patient.last_name)
-        patient.sex = data.get('sex', patient.sex)
-        patient.location_bed = data.get('location_bed', patient.location_bed)
-        patient.primary_diagnosis_summary = data.get('primary_diagnosis_summary', patient.primary_diagnosis_summary)
-        patient.code_status = data.get('code_status', patient.code_status)
-        patient.isolation_status = data.get('isolation_status', patient.isolation_status)
-        patient.attending_id = data.get('attending_id', patient.attending_id) # Note: Add validation/permission checks later if needed
+        # Validate and load updates onto the existing patient instance
+        # Use partial=True to allow updating only some fields
+        try:
+            # Marshmallow will update the 'patient' object in-place because load_instance=True
+            updated_patient = patient_schema.load(
+                json_data, instance=patient, partial=True, session=db.session
+            )
+        except ValidationError as err:
+            # Return validation errors
+            return jsonify({"errors": err.messages}), 400
 
-        # Handle date conversion if DOB is provided
-        if 'dob' in data:
-            try:
-                dob_date = date.fromisoformat(data['dob'])
-                patient.dob = dob_date
-            except (ValueError, TypeError):
-                return jsonify({"error": "Invalid date format for dob. Use YYYY-MM-DD."}), 400
+        # Check if MRN is being changed and if the new one conflicts (Optional advanced check)
+        # Note: Handling unique constraint changes during update needs care
+        if 'mrn' in json_data and json_data['mrn'] != mrn:
+             if Patient.query.filter(Patient.mrn == json_data['mrn'], Patient.id != patient.id).first():
+                 return jsonify({"error": f"Another patient with MRN {json_data['mrn']} already exists."}), 409
 
         db.session.commit()
 
-        # Return the updated patient data
-        patient_data = {
-             "id": patient.id, "mrn": patient.mrn, "first_name": patient.first_name,
-             "last_name": patient.last_name, "dob": patient.dob.isoformat(), "sex": patient.sex,
-             "location_bed": patient.location_bed, "primary_diagnosis_summary": patient.primary_diagnosis_summary,
-             "code_status": patient.code_status, "isolation_status": patient.isolation_status,
-             "attending_id": patient.attending_id
-        }
-        return jsonify({"message": "Patient updated successfully", "patient": patient_data}), 200
+        # Serialize the updated patient for the response
+        return jsonify({
+            "message": "Patient updated successfully",
+            "patient": patient_schema.dump(updated_patient)
+        }), 200
 
     except Exception as e:
-        db.session.rollback() # Roll back changes on error
+        db.session.rollback()
         print(f"Database error updating patient {mrn}: {e}")
         return jsonify({"error": "An error occurred updating patient data"}), 500
 
-# --- ADD THIS NEW FUNCTION FOR DELETING (DELETE) ---
+# Route to DELETE a specific patient by MRN
 @patients_bp.route('/patients/<string:mrn>', methods=['DELETE'])
 def delete_patient(mrn):
     """Delete a patient by MRN."""
@@ -159,11 +160,11 @@ def delete_patient(mrn):
         db.session.delete(patient)
         db.session.commit()
 
-        # Return a success message, status 200 OK or 204 No Content
+        # Return success message (or use status 204 No Content)
         return jsonify({"message": f"Patient with MRN {mrn} deleted successfully."}), 200
         # return '', 204
 
     except Exception as e:
-        db.session.rollback() # Roll back changes on error
+        db.session.rollback()
         print(f"Database error deleting patient {mrn}: {e}")
         return jsonify({"error": "An error occurred deleting patient data"}), 500

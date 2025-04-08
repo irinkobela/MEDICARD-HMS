@@ -8,7 +8,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password_hash = db.Column(db.String(128))
+    password_hash = db.Column(db.String(255)) # Increased length to 255
     role = db.Column(db.String(80), nullable=True) # Added role back from run.py example
 
     def __repr__(self):
@@ -18,7 +18,8 @@ class Patient(db.Model):
     __tablename__ = 'patients' # Explicit table name
     id = db.Column(db.Integer, primary_key=True)
     mrn = db.Column(db.String(64), unique=True, nullable=False, index=True) # Added index
-    name = db.Column(db.String(128), nullable=False) # Combined first/last for now, adjust if needed
+    first_name = db.Column(db.String(100), nullable=False) # Patient's first name
+    last_name = db.Column(db.String(100), nullable=False) # Patient's last name
     dob = db.Column(db.Date, nullable=False) # Date of Birth - make sure date is imported
     sex = db.Column(db.String(10)) # e.g., 'Male', 'Female', 'Other'
     location_bed = db.Column(db.String(64), nullable=True)
