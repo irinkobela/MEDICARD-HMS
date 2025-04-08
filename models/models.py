@@ -35,6 +35,38 @@ class Patient(db.Model):
          # Simple representation including MRN
          return f'<Patient {self.mrn} - {self.name}>'
 
+# Keep the existing User and Patient class definitions above this
+
+# --- ADD THIS NEW CLASS ---
+class Admission(db.Model):
+    __tablename__ = 'admissions' # Explicit table name
+    id = db.Column(db.Integer, primary_key=True) # Unique ID for each admission
+
+    # Foreign Key linking to the Patient table
+    patient_id = db.Column(db.Integer, db.ForeignKey('patients.id'), nullable=False, index=True)
+
+    # Foreign Key linking to the User table (for admitting physician, nullable if not always known)
+    admitting_physician_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+
+    admission_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow) # Use DateTime for time too
+    discharge_date = db.Column(db.DateTime, nullable=True) # Nullable until discharged
+    reason_for_visit = db.Column(db.Text, nullable=True) # Can store longer text
+    current_location = db.Column(db.String(100), nullable=True) # e.g., 'ER', 'ICU A', 'Room 402'
+
+    # Define relationship back to Patient (One Patient can have Many Admissions)
+    # 'patient' attribute will be added to Admission instances
+    # 'admissions' attribute will be added to Patient instances
+    patient = db.relationship('Patient', backref=db.backref('admissions', lazy='dynamic')) # Use lazy='dynamic' for query building
+
+    # Define relationship back to User (One User can admit Many Patients) - Optional
+    # 'admitting_physician' attribute will be added to Admission instances
+    # 'admitted_patients' attribute will be added to User instances
+    admitting_physician = db.relationship('User', backref=db.backref('admitted_patients', lazy='dynamic'))
+
+    def __repr__(self):
+        return f'<Admission {self.id} for Patient {self.patient_id} on {self.admission_date}>'
+# --- END OF NEW CLASS ---
+
 
 class Result(db.Model):
     __tablename__ = 'results'
