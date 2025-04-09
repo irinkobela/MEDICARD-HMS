@@ -1,11 +1,11 @@
 # routes/admissions.py
 
-from flask import Blueprint, request, jsonify
-from models.models import Admission, Patient, User # Import necessary models
+from flask import Blueprint, request, jsonify # type: ignore
+from models.models import Admission, Patient, User # type: ignore # Import necessary models
 from extensions import db                       # Import db instance
 from schemas import admission_schema, admissions_schema # Import Admission schemas
-from marshmallow import ValidationError
-from sqlalchemy import or_ # Keep for potential search later
+from marshmallow import ValidationError # type: ignore
+from sqlalchemy import or_ # type: ignore # Keep for potential search later
 
 # Define blueprint
 admissions_bp = Blueprint('admissions', __name__) # Different name from patients_bp
