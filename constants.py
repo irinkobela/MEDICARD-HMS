@@ -1,0 +1,22 @@
+# constants.py
+
+class Roles:
+    ADMIN = 'Admin'
+    DOCTOR = 'Doctor'
+    RESIDENT = 'Resident'
+    NURSE = 'Nurse'
+    LAB_TECH = 'LabTech'
+    RECEPTION = 'Reception'
+    BILLING = 'Billing'
+    SECURITY = 'Security'
+    PATIENT = 'Patient'
+    PHARMACIST = 'Pharmacist'
+    SURGEON = 'Surgeon'
+    ANGIOLOGIST = 'Angiologist'
+    ANESTHESIOLOGIST = 'Anesthesiologist'
+    RADIOLOGIST = 'Radiologist'
+    PHYSIOTHERAPIST = 'Physiotherapist'
+    IT_SUPPORT = 'ITSupport'
+    HOUSEKEEPING = 'Housekeeping'
+    MAINTENANCE = 'Maintenance'
+    SOCIAL_WORKER = 'SocialWorker'

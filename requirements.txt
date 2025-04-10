@@ -1,8 +1,11 @@
 alembic==1.15.2
+bcrypt==4.3.0
 blinker==1.9.0
 click==8.1.8
 colorama==0.4.6
 Flask==3.1.0
+Flask-Bcrypt==1.0.1
+Flask-Login==0.6.3
 flask-marshmallow==1.3.0
 Flask-Migrate==4.1.0
 Flask-SQLAlchemy==3.1.1
@@ -15,9 +18,7 @@ marshmallow==3.26.1
 marshmallow-sqlalchemy==1.4.1
 packaging==24.2
 psycopg2-binary==2.9.10
-PyJWT==2.8.0
 python-dotenv==1.1.0
 SQLAlchemy==2.0.40
 typing_extensions==4.13.1
 Werkzeug==3.1.3
-zipp>=3.19.1 # not directly required, pinned by Snyk to avoid a vulnerability

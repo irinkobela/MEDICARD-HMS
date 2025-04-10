@@ -1,7 +1,7 @@
 from flask import jsonify
 from werkzeug.http import HTTP_STATUS_CODES
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
-from jwt.exceptions import PyJWTError
+from jwt.exceptions import PyJWTError # type: ignore
 from marshmallow import ValidationError
 
 def register_error_handlers(app):
