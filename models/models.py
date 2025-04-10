@@ -125,3 +125,14 @@ class Order(db.Model):
 
     patient = db.relationship('Patient', backref=db.backref('orders', lazy='dynamic')) # Added relationship
     # Add relationships for physicians if needed
+    class MedicalTerm(db.Model):
+        __tablename__ = 'medical_terms' # Explicit table name
+        id = db.Column(db.Integer, primary_key=True)
+        category = db.Column(db.String(150), nullable=True, index=True) # e.g., "Patient Management & Registration"
+        term_en = db.Column(db.String(255), nullable=False, index=True) # English Term
+        term_ka = db.Column(db.String(255), nullable=False, index=True) # Georgian Term
+        pronunciation_ka = db.Column(db.String(255), nullable=True) # e.g., "(Patsienti)" - optional pronunciation guide
+        notes = db.Column(db.Text, nullable=True) # For any extra context/notes from the doc
+    
+        def __repr__(self):
+            return f'<MedicalTerm {self.id}: {self.term_en} / {self.term_ka}>'
