@@ -1,21 +1,25 @@
 // frontend/src/pages/DashboardPage.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios'; // We'll need axios again
+import axios from 'axios';
+import styles from './DashboardPage.module.css'; // <<< 1. Import the CSS module
 
 function DashboardPage() {
   const navigate = useNavigate();
-  const [userData, setUserData] = useState(null); // To store user data
+  const [userData, setUserData] = useState(null);
 
-  // Simulate fetching user data from storage on component mount
   useEffect(() => {
     const storedData = sessionStorage.getItem('userData');
     if (storedData) {
-      setUserData(JSON.parse(storedData));
+      try {
+        const parsedData = JSON.parse(storedData);
+        setUserData(parsedData);
+      } catch (error) {
+        console.error("Failed to parse user data from sessionStorage", error);
+        sessionStorage.removeItem('userData');
+        navigate('/login');
+      }
     } else {
-      // If no user data found (e.g., user directly navigated here without login)
-      // The ProtectedRoute in App.jsx should ideally handle this,
-      // but this is an extra safety check.
       console.warn("No user data found in session storage. Redirecting to login.");
       navigate('/login');
     }
@@ -23,50 +27,62 @@ function DashboardPage() {
 
   const handleLogout = async () => {
     try {
-      // Call your backend logout endpoint
-      await axios.post('http://127.0.0.1:5000/logout'); // Assuming default credentials handling
-
-      // Clear user data from storage
-      sessionStorage.removeItem('userData');
-      // Optional: Clear other related storage items
-
-      // Redirect to login page
-      navigate('/login');
-
+      await axios.post('http://127.0.0.1:5000/api/auth/logout', {}, {
+           withCredentials: true
+      });
+      console.log("Logout API call successful");
     } catch (error) {
-       console.error("Logout failed:", error);
-       // Handle logout error (e.g., show a message)
-       // Even if logout API fails, attempt to clear local state and redirect
+       console.error("Logout API call failed:", error);
+    } finally {
        sessionStorage.removeItem('userData');
        navigate('/login');
     }
   };
 
-  // Display loading or welcome message while user data is loading or missing
   if (!userData) {
-    return <div>Loading user data...</div>;
+    // Consider adding a loading CSS class here too
+    return <div>მომხმარებლის მონაცემები იტვირთება...</div>;
   }
 
-  // --- TODO: Fetch and display patient list here ---
-  // We will add the logic to call '/api/dashboard/patient-list'
-  // and display the results in the next step.
+  const firstName = userData.firstName || '';
+  const lastName = userData.lastName || '';
+  const displayName = (firstName || lastName) ? `${firstName} ${lastName}`.trim() : (userData.username || userData.email);
 
+  // === 2. Apply CSS classes using className ===
   return (
-    <div>
-      <h2>Dashboard</h2>
-      <p>Welcome, {userData.username || userData.email}!</p>
-      <p>Your Role: {userData.role}</p>
+    <div className={styles.dashboardContainer}> {/* Apply container style */}
 
-      {/* Add a simple logout button */}
-      <button onClick={handleLogout}>Logout (გასვლა)</button>
+      {/* Apply greeting style */}
+      <h2 className={styles.greeting}>
+        გამარჯობა {displayName}, ბედნიერ დღეს გისურვებ!
+      </h2>
 
-      <hr />
+      {/* Apply user info style */}
+      <p className={styles.userInfo}>
+        თქვენი როლი: {userData.role || 'N/A'}
+      </p>
 
-      <h3>Patient List</h3>
-      {/* Placeholder for patient list */}
-      <div>
-        Patient list will be displayed here... (Fetching data is the next step)
+      {/* Apply button style */}
+      <button onClick={handleLogout} className={styles.logoutButton}>
+        გასვლა
+      </button>
+
+      {/* Apply separator style */}
+      <hr className={styles.separator} />
+
+      {/* Apply section title style */}
+      <h3 className={styles.sectionTitle}>
+        პაციენტების სია
+      </h3>
+
+      {/* Apply placeholder text style */}
+      <div className={styles.placeholderText}>
+        პაციენტების სია აქ გამოჩნდება... (მონაცემების ჩატვირთვა შემდეგი ნაბიჯია)
       </div>
+
+      {/* --- TODO: Add Patient List Fetching and Rendering Logic Here --- */}
+      {/* We will add patient list container/table styles later */}
+
     </div>
   );
 }
