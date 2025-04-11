@@ -46,93 +46,9 @@ class Patient(db.Model):
     isolation_status = db.Column(db.String(64), nullable=True)
     attending_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
 
+
     attending = db.relationship('User', backref=db.backref('patients', lazy=True))
+
 
     def __repr__(self):
         return f'<Patient {self.mrn} - {self.first_name} {self.last_name}>'
-
-class Admission(db.Model):
-    __tablename__ = 'admissions'
-    id = db.Column(db.Integer, primary_key=True)
-    patient_id = db.Column(db.Integer, db.ForeignKey('patients.id'), nullable=False, index=True)
-    admitting_physician_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
-    admission_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    discharge_date = db.Column(db.DateTime, nullable=True)
-    reason_for_visit = db.Column(db.Text, nullable=True)
-    current_location = db.Column(db.String(100), nullable=True)
-
-    patient = db.relationship('Patient', backref=db.backref('admissions', lazy='dynamic'))
-    admitting_physician = db.relationship('User', backref=db.backref('admitted_patients', lazy='dynamic'))
-
-    def __repr__(self):
-        return f'<Admission {self.id} for Patient {self.patient_id} on {self.admission_date}>'
-
-class Result(db.Model):
-    __tablename__ = 'results'
-    id = db.Column(db.Integer, primary_key=True)
-    patient_id = db.Column(db.Integer, db.ForeignKey('patients.id'), nullable=False) # Added FK
-    test_name = db.Column(db.String(100), nullable=False) # Example field
-    value = db.Column(db.String(100)) # Example field
-    units = db.Column(db.String(50)) # Example field
-    is_critical = db.Column(db.Boolean, default=False)
-    acknowledged_at = db.Column(db.DateTime, nullable=True)
-    timestamp = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-
-    patient = db.relationship('Patient', backref=db.backref('results', lazy='dynamic')) # Added relationship
-
-
-class Imaging(db.Model):
-    __tablename__ = 'imaging'
-    id = db.Column(db.Integer, primary_key=True)
-    patient_id = db.Column(db.Integer, db.ForeignKey('patients.id'), nullable=False) # Added FK
-    modality = db.Column(db.String(50)) # Example: CT, MRI, X-Ray
-    body_part = db.Column(db.String(100)) # Example
-    report = db.Column(db.Text) # Example
-    is_critical = db.Column(db.Boolean, default=False)
-    acknowledged_at = db.Column(db.DateTime, nullable=True)
-    timestamp = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-
-    patient = db.relationship('Patient', backref=db.backref('imaging_studies', lazy='dynamic')) # Added relationship
-
-
-class Consult(db.Model):
-    __tablename__ = 'consults'
-    id = db.Column(db.Integer, primary_key=True)
-    patient_id = db.Column(db.Integer, db.ForeignKey('patients.id'), nullable=False) # Added FK
-    requesting_physician_id = db.Column(db.Integer, db.ForeignKey('user.id')) # Example
-    assigned_physician_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True) # Example
-    consult_service = db.Column(db.String(100)) # Example: Cardiology, Neurology
-    reason = db.Column(db.Text) # Example
-    status = db.Column(db.String(64)) # e.g., Pending, Completed
-    read_at = db.Column(db.DateTime, nullable=True)
-    completed_at = db.Column(db.DateTime, nullable=True) # Example
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow) # Example
-
-    patient = db.relationship('Patient', backref=db.backref('consults', lazy='dynamic')) # Added relationship
-    # Add relationships for requesting/assigned physicians if needed
-
-
-class Order(db.Model):
-    __tablename__ = 'orders'
-    id = db.Column(db.Integer, primary_key=True)
-    patient_id = db.Column(db.Integer, db.ForeignKey('patients.id'), nullable=False) # Added FK
-    order_type = db.Column(db.String(50)) # Example: Medication, Lab, Radiology
-    order_details = db.Column(db.Text) # Example
-    status = db.Column(db.String(64)) # e.g., Ordered, Completed, Cancelled
-    ordering_physician_id = db.Column(db.Integer, db.ForeignKey('user.id')) # Example
-    responsible_attending_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True) # Example - maybe just one physician ID needed?
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow) # Example
-
-    patient = db.relationship('Patient', backref=db.backref('orders', lazy='dynamic')) # Added relationship
-    # Add relationships for physicians if needed
-    class MedicalTerm(db.Model):
-        __tablename__ = 'medical_terms' # Explicit table name
-        id = db.Column(db.Integer, primary_key=True)
-        category = db.Column(db.String(150), nullable=True, index=True) # e.g., "Patient Management & Registration"
-        term_en = db.Column(db.String(255), nullable=False, index=True) # English Term
-        term_ka = db.Column(db.String(255), nullable=False, index=True) # Georgian Term
-        pronunciation_ka = db.Column(db.String(255), nullable=True) # e.g., "(Patsienti)" - optional pronunciation guide
-        notes = db.Column(db.Text, nullable=True) # For any extra context/notes from the doc
-    
-        def __repr__(self):
-            return f'<MedicalTerm {self.id}: {self.term_en} / {self.term_ka}>'
