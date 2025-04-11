@@ -1,74 +1,110 @@
 // frontend/src/pages/LoginPage.jsx
-import React, { useState } from 'react'; // Import React and the useState hook
+import React, { useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import styles from './LoginPage.module.css';
+import medicardLogo from '../assets/medicard-logo.png';
 
-// Define the LoginPage component
 function LoginPage() {
-  // State variables to hold the input values
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState(''); // To store any login error messages
-  const [loading, setLoading] = useState(false); // To show a loading state on submit
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  // Function to handle form submission
-  const handleLogin = (event) => {
-    event.preventDefault(); // Prevent the browser from doing a full page reload on submit
-    setError(''); // Clear previous errors
-    setLoading(true); // Indicate loading
-    console.log('Attempting login with:', { email, password });
+  const handleLogin = async (event) => {
+    // ... handleLogin function remains the same ...
+    event.preventDefault();
+    setError('');
+    setLoading(true);
 
-    // --- TODO: Replace this alert with an actual API call using axios ---
-    // We will add the axios call in the next step!
-    alert('Login form submitted! API call is next.');
-    // ---
-
-    // Simulate API call ending (remove this later)
-    setLoading(false);
-    // setEmail(''); // Optional: Clear fields after submit attempt
-    // setPassword('');
+    try {
+      const response = await axios.post('http://127.0.0.1:5000/login', {
+        email: email,
+        password: password,
+      });
+      sessionStorage.setItem('userData', JSON.stringify(response.data.user));
+      navigate('/dashboard');
+    } catch (err) {
+      let errorMessage = 'Login failed. Please try again.';
+      if (err.response?.data?.error) {
+        errorMessage = err.response.data.error;
+      } else if (err.response?.data?.errors) {
+        errorMessage = Object.values(err.response.data.errors).flat().join(' ');
+      } else if (err.request) {
+        errorMessage = 'Cannot connect to the server.';
+      } else {
+        errorMessage = err.message;
+      }
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Return the JSX structure (HTML-like code) for the login page
   return (
-    <div>
-      <h2>Login Page</h2>
-      <form onSubmit={handleLogin}>
-        <div>
-          {/* Email Input */}
-          <label htmlFor="email">ელ.ფოსტა:</label> {/* Georgian for Email */}
+    <div className={styles.loginPageContainer}>
+      <img src={medicardLogo} alt="Medicard Logo" className={styles.logo} />
+
+      <form onSubmit={handleLogin} className={styles.loginForm}>
+        <h2>შესვლა</h2>
+
+        <div className={styles.formGroup}>
+          <label htmlFor="email">ელ.ფოსტა:</label>
           <input
             type="email"
             id="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)} // Update email state when user types
-            required // HTML5 validation: field must be filled
-            disabled={loading} // Disable input while loading
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            disabled={loading}
+            autoComplete="email"
           />
         </div>
-        <div>
-          {/* Password Input */}
-          <label htmlFor="password">პაროლი:</label> {/* Georgian for Password */}
+
+        <div className={styles.formGroup}>
+          <label htmlFor="password">პაროლი:</label>
           <input
             type="password"
             id="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)} // Update password state when user types
-            required // HTML5 validation
-            disabled={loading} // Disable input while loading
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            disabled={loading}
+            autoComplete="current-password"
           />
         </div>
-        {/* Display error message if 'error' state is not empty */}
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-        <div>
-          {/* Submit Button */}
-          <button type="submit" disabled={loading}>
-            {/* Show different text while loading */}
-            {loading ? 'Logging in...' : 'შესვლა'}{/* Georgian for Login */}
+
+        {/* Display Error Message */}
+        {error && <p className={styles.errorMessage}>{error}</p>}
+
+        {/* --- START: Add Forgot Password Snippet Here --- */}
+        <div style={{ textAlign: 'center', marginTop: '0px', marginBottom: '15px' }}> {/* Adjusted margins */}
+          <button
+            type="button" // Important: type="button" prevents form submission
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#007b8a', // Use theme color
+              textDecoration: 'underline',
+              cursor: 'pointer',
+              fontSize: '0.9rem' // Slightly smaller font
+            }}
+            // Alert message in Georgian
+            onClick={() => alert('Გთხოვთ დაუკავშირდეთ ადმინისტრატორს პაროლის აღსადგენად.')}
+          >
+            დაგავიწყდა პაროლი?
           </button>
         </div>
+        {/* --- END: Add Forgot Password Snippet Here --- */}
+
+
+        <button type="submit" className={styles.loginButton} disabled={loading}>
+          {loading ? 'იტვირთება...' : 'შესვლა'}
+        </button>
       </form>
     </div>
   );
 }
 
-// Export the component so App.jsx can import it
 export default LoginPage;

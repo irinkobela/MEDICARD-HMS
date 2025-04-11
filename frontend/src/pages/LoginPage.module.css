@@ -1,0 +1,123 @@
+/* frontend/src/pages/LoginPage.module.css */
+
+/* 🌐 Login Page Container */
+.loginPageContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: linear-gradient(to bottom right, #40e0d0, #007b8a); /* Soft medical-themed gradient */
+    padding: 24px;
+  }
+  
+  /* 🏥 Logo Styling */
+  .logo {
+    width: 140px;
+    height: auto;
+    margin-bottom: 24px;
+  }
+  
+  /* 📄 Login Form Card */
+  .loginForm {
+    background-color: #ffffff;
+    padding: 36px;
+    border-radius: 10px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  
+  /* 🧾 Form Title */
+  .loginForm h2 {
+    text-align: center;
+    margin-bottom: 10px;
+    color: #2c3e50; /* Dark hospital blue tone */
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+  
+  /* 📑 Label + Input Group */
+  .formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  
+  .formGroup label {
+    font-weight: 500;
+    color: #444; /* Readable label */
+    font-size: 0.95rem;
+  }
+  
+  .formGroup input {
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+  }
+  
+  .formGroup input:focus {
+    border-color: #007b8a;
+    outline: none;
+  }
+  
+  .formGroup input:disabled {
+    background-color: #f3f3f3;
+    cursor: not-allowed;
+  }
+  /* ❓ Forgot Password Button/Link */
+.forgotPasswordContainer { /* Style for the containing div */
+    text-align: center;
+    margin-top: 0px; /* Adjust as needed */
+    margin-bottom: 15px; /* Space before the main login button */
+  }
+  
+  .forgotPasswordButton {
+    background: none;
+    border: none;
+    color: #007b8a; /* Use theme color from your button/gradient */
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 0; /* Remove default button padding */
+  }
+  
+  .forgotPasswordButton:hover {
+    color: #005e6e; /* Darker shade on hover */
+  }
+  
+  /* 🔐 Login Button */
+  .loginButton {
+    padding: 12px;
+    background-color: #007b8a;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+  }
+  
+  .loginButton:disabled {
+    background-color: #9ca3af; /* Soft gray */
+    cursor: not-allowed;
+  }
+  
+  .loginButton:not(:disabled):hover {
+    background-color: #005e6e;
+  }
+  
+  /* ⚠️ Error Message */
+  .errorMessage {
+    color: #dc3545;
+    text-align: center;
+    margin-top: -8px;
+    font-size: 0.9rem;
+  }
+  
