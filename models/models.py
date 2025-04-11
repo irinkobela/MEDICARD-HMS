@@ -1,10 +1,12 @@
 # models/models.py
 
+
 from extensions import db
 from datetime import date, datetime
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import UserMixin # Import UserMixin
+from flask_login import UserMixin # Import UserMixin  
 # from constants import Roles # Roles constant not typically needed in the model itself
+
 
 class User(db.Model, UserMixin):
     __tablename__ = 'user'
@@ -17,9 +19,11 @@ class User(db.Model, UserMixin):
     last_login = db.Column(db.DateTime, nullable=True)
     is_active = db.Column(db.Boolean, default=True) # Used by Flask-Login
 
+
     def set_password(self, password):
         """Hashes the password and stores it."""
         self.password_hash = generate_password_hash(password)
+
 
     def check_password(self, password):
         """Checks if the provided password matches the stored hash."""
@@ -28,9 +32,11 @@ class User(db.Model, UserMixin):
             return False
         return check_password_hash(self.password_hash, password)
 
+
     # __repr__ needs correct indentation
     def __repr__(self):
         return f'<User {self.username}>'
+
 
 class Patient(db.Model):
     __tablename__ = 'patients'
