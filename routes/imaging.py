@@ -57,7 +57,7 @@ def get_imagings():
 
         query = Imaging.query
         if patient_id_filter:
-            query = query.filter_by(patient)
+            query = query.filter_by(Patient)
     except Exception as e:
         print(f"Error fetching imaging records: {e}")
         return jsonify({"error": "An internal server error occurred"}), 500

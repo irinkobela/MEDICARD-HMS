@@ -1,0 +1,224 @@
+/* DoctorsDashboardPage.module.css */
+
+/* === General Layout === */
+.dashboardContainer {
+  padding: 2rem;
+  background-color: #f9fcff; /* lightest blue-tinted white */
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #003c58; /* Dark slate blue */
+  position: relative;
+}
+
+/* === Greeting Toast === */
+.greetingToast {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  background-color: #e6f4f1; /* soft mint green */
+  color: #004d40;
+  padding: 1rem 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  animation: fadeInSlide 0.5s ease-in-out;
+}
+
+.toastCloseButton {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #004d40;
+}
+
+/* === Logout Button === */
+.logoutButton {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background-color: #d1e9ff;
+  color: #004a74;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.logoutButton:hover {
+  background-color: #b3dafd;
+}
+
+/* === Section Styling === */
+.section {
+  margin-bottom: 3rem;
+  background-color: white;
+  border-radius: 1.5rem;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 64, 128, 0.08);
+}
+
+/* === Filters === */
+.filters {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.filters select {
+  padding: 0.5rem 1rem;
+  border-radius: 1rem;
+  border: 1px solid #cce4f6;
+  background-color: #f0f8ff;
+  font-size: 0.9rem;
+  color: #00466d;
+}
+
+/* === Patient Table === */
+.patientListContainer {
+  overflow-x: auto;
+}
+
+.patientTable {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.patientTable th,
+.patientTable td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #e1ecf2;
+}
+
+.patientTable th {
+  background-color: #e9f5ff;
+  color: #003b5c;
+  font-weight: 600;
+}
+
+.patientTable td {
+  background-color: #ffffff;
+}
+
+.placeholderText {
+  text-align: center;
+  padding: 2rem;
+  color: #7a9ca5;
+}
+
+/* === Error Message === */
+.errorMessage {
+  background-color: #ffe0e0;
+  color: #990000;
+  padding: 1rem;
+  border-radius: 1rem;
+  margin-top: 1rem;
+}
+
+/* === Search Bar === */
+.searchBar {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 1.2rem;
+  border: 1px solid #cce4f6;
+  background-color: #f4faff;
+  font-size: 1rem;
+  margin-top: 0.5rem;
+}
+
+/* === Alerts Box === */
+.alertsBox {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.alertCritical {
+  background-color: #ffecec;
+  padding: 1rem;
+  border-left: 6px solid #d00000;
+  border-radius: 0.8rem;
+}
+
+.alertRoutine {
+  background-color: #e8f4fc;
+  padding: 1rem;
+  border-left: 6px solid #0088cc;
+  border-radius: 0.8rem;
+}
+
+/* === Widgets Box === */
+.widgetBox {
+  padding: 1.5rem;
+  background-color: #f2f9f8;
+  border-radius: 1.2rem;
+  font-weight: 500;
+  color: #00564d;
+}
+
+/* === Bottom Navigation === */
+.bottomNav {
+  display: flex;
+  justify-content: space-around;
+  background-color: #eaf6ff;
+  padding: 1rem;
+  border-radius: 1.2rem;
+  position: sticky;
+  bottom: 0;
+  box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.bottomNav button {
+  background-color: #d6eaff;
+  color: #004e6e;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 1.5rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.bottomNav button:hover {
+  background-color: #c1dffc;
+}
+
+/* === Animation === */
+@keyframes fadeInSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-20%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* === Status Icon Styling (you can customize these) === */
+.statusIcon {
+  margin-right: 0.4rem;
+  font-size: 1.2rem;
+}
+
+/* === Responsive === */
+@media (max-width: 768px) {
+  .filters {
+    flex-direction: column;
+  }
+
+  .bottomNav {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+}

@@ -110,7 +110,7 @@ function LoginPage() {
             type="button" // Prevents form submission
             className={styles.forgotPasswordButton} // Apply styles from CSS module
             // Simple alert for now, replace with navigation or modal later if needed
-            onClick={() => alert('Გთხოვთ დაუკავშირდეთ ადმინისტრატორს პაროლის აღსადგენად.')}
+            onClick={() => alert('გთხოვთ დაუკავშირდეთ IT დეპარტამენტს პაროლის აღსადგენად.')}
           >
             დაგავიწყდა პაროლი?
           </button>
