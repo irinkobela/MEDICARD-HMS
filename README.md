@@ -1,6 +1,6 @@
 # MEDICARD-HMS
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) ## Vision
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) 
 
 MEDICARD-HMS is a modern, doctor-centered Hospital Management System (HMS) designed from the ground up to streamline clinical workflows, enhance patient safety, and improve the efficiency of healthcare professionals in demanding environments like Cardiology, ICU, Cath Lab, and Surgery.
 
