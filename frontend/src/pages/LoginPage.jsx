@@ -25,6 +25,7 @@ function LoginPage() {
       const response = await axios.post('http://127.0.0.1:5000/api/auth/login', { // Correct backend URL
         email: email,
         password: password,
+        withCredentials: true, // Include credentials for CORS
       });
 
       // Login successful: Store user data in sessionStorage

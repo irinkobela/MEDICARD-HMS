@@ -1,45 +1,188 @@
-/* DoctorsDashboardPage.module.css */
-
-/* === General Layout === */
+/* Main container for the whole dashboard */
 .dashboardContainer {
-  padding: 2rem;
-  background-color: #f9fcff; /* lightest blue-tinted white */
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #003c58; /* Dark slate blue */
-  position: relative;
+  background-color: var(--bg);
+  padding: 1rem;
+  font-family: 'Segoe UI', sans-serif;
 }
 
-/* === Greeting Toast === */
+/* Toast message */
 .greetingToast {
   position: fixed;
   top: 1rem;
-  right: 1rem;
-  background-color: #e6f4f1; /* soft mint green */
-  color: #004d40;
-  padding: 1rem 1.5rem;
-  border-radius: 1rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  z-index: 10;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #d6f5d6;
+  border: 1px solid #33cc33;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  z-index: 1000;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 1rem;
-  animation: fadeInSlide 0.5s ease-in-out;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
 .toastCloseButton {
-  background: none;
+  background: transparent;
   border: none;
-  font-size: 1.2rem;
+  font-size: 1.25rem;
   cursor: pointer;
-  color: #004d40;
 }
 
-/* === Logout Button === */
-.logoutButton {
+/* Top right bar */
+.logoutButton, .themeToggle {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  margin-left: 0.5rem;
+  background: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.themeToggle {
+  right: 6rem;
+  background: #333;
+}
+
+/* Section blocks */
+.section {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 0 4px rgba(0,0,0,0.05);
+}
+
+.section h2 {
+  margin-bottom: 1rem;
+  color: #222;
+  font-size: 1.2rem;
+}
+
+/* Patient Table */
+.patientTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.patientTable th, .patientTable td {
+  border: 1px solid #ddd;
+  padding: 0.75rem;
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+.patientTable th {
+  background-color: #f7f7f7;
+  font-weight: 600;
+}
+
+/* Status icon tooltips */
+.iconWithTooltip {
+  position: relative;
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+.tooltipText {
+  visibility: hidden;
+  width: auto;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 5px;
+  padding: 2px 8px;
   position: absolute;
-  top: 1.5rem;
-  right: 1.5rem;
+  z-index: 1;
+  top: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 0.75rem;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.iconWithTooltip:hover .tooltipText {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Filters inside clinical operations */
+.filters {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.filters select {
+  padding: 0.5rem;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+/* Widget boxes (for Diagnostics, Admin etc.) */
+.widgetBox {
+  padding: 1rem;
+  background-color: #f0f0ff;
+  border-left: 4px solid #4d79ff;
+  border-radius: 5px;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+/* Alerts box */
+.alertsBox {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.alertCritical {
+  flex: 1;
+  background-color: #ffe5e5;
+  padding: 1rem;
+  border-left: 4px solid #ff4d4d;
+  border-radius: 5px;
+}
+
+.alertRoutine {
+  flex: 1;
+  background-color: #e6f7ff;
+  padding: 1rem;
+  border-left: 4px solid #3399ff;
+  border-radius: 5px;
+}
+
+/* Messages */
+.placeholderText {
+  font-style: italic;
+  color: #888;
+}
+
+.errorMessage {
+  color: red;
+  margin-top: 1rem;
+}
+
+.dropdownWrapper {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  display: inline-block;
+  margin-left: 1rem;
+}
+
+.dropdownToggle {
   background-color: #d1e9ff;
   color: #004a74;
   border: none;
@@ -50,175 +193,38 @@
   transition: background-color 0.3s ease;
 }
 
-.logoutButton:hover {
+.dropdownToggle:hover {
   background-color: #b3dafd;
 }
 
-/* === Section Styling === */
-.section {
-  margin-bottom: 3rem;
-  background-color: white;
-  border-radius: 1.5rem;
-  padding: 2rem;
-  box-shadow: 0 2px 8px rgba(0, 64, 128, 0.08);
-}
-
-/* === Filters === */
-.filters {
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-  margin-bottom: 1rem;
-}
-
-.filters select {
-  padding: 0.5rem 1rem;
-  border-radius: 1rem;
-  border: 1px solid #cce4f6;
-  background-color: #f0f8ff;
-  font-size: 0.9rem;
-  color: #00466d;
-}
-
-/* === Patient Table === */
-.patientListContainer {
-  overflow-x: auto;
-}
-
-.patientTable {
-  width: 100%;
-  border-collapse: collapse;
-  border-radius: 1rem;
-  overflow: hidden;
-}
-
-.patientTable th,
-.patientTable td {
-  padding: 1rem;
-  text-align: left;
-  border-bottom: 1px solid #e1ecf2;
-}
-
-.patientTable th {
-  background-color: #e9f5ff;
-  color: #003b5c;
-  font-weight: 600;
-}
-
-.patientTable td {
+.dropdownMenu {
+  display: none;
+  position: absolute;
+  right: -5rem; /* Adjusted to move the dropdown more to the right */
   background-color: #ffffff;
-}
-
-.placeholderText {
-  text-align: center;
-  padding: 2rem;
-  color: #7a9ca5;
-}
-
-/* === Error Message === */
-.errorMessage {
-  background-color: #ffe0e0;
-  color: #990000;
-  padding: 1rem;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
   border-radius: 1rem;
-  margin-top: 1rem;
-}
-
-/* === Search Bar === */
-.searchBar {
-  width: 100%;
-  padding: 0.75rem 1rem;
-  border-radius: 1.2rem;
-  border: 1px solid #cce4f6;
-  background-color: #f4faff;
-  font-size: 1rem;
   margin-top: 0.5rem;
-}
-
-/* === Alerts Box === */
-.alertsBox {
-  display: flex;
+  min-width: 200px;
+  z-index: 100;
   flex-direction: column;
-  gap: 1rem;
-  margin-top: 1rem;
 }
 
-.alertCritical {
-  background-color: #ffecec;
-  padding: 1rem;
-  border-left: 6px solid #d00000;
-  border-radius: 0.8rem;
-}
-
-.alertRoutine {
-  background-color: #e8f4fc;
-  padding: 1rem;
-  border-left: 6px solid #0088cc;
-  border-radius: 0.8rem;
-}
-
-/* === Widgets Box === */
-.widgetBox {
-  padding: 1.5rem;
-  background-color: #f2f9f8;
-  border-radius: 1.2rem;
-  font-weight: 500;
-  color: #00564d;
-}
-
-/* === Bottom Navigation === */
-.bottomNav {
+.dropdownWrapper:hover .dropdownMenu {
   display: flex;
-  justify-content: space-around;
-  background-color: #eaf6ff;
-  padding: 1rem;
-  border-radius: 1.2rem;
-  position: sticky;
-  bottom: 0;
-  box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.05);
 }
 
-.bottomNav button {
-  background-color: #d6eaff;
-  color: #004e6e;
+.dropdownMenu button {
+  background: none;
   border: none;
-  padding: 0.6rem 1rem;
-  border-radius: 1.5rem;
+  text-align: left;
+  padding: 0.8rem 1.2rem;
+  color: #003c58;
+  font-size: 1rem;
   cursor: pointer;
-  transition: background-color 0.3s ease;
-  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
 }
 
-.bottomNav button:hover {
-  background-color: #c1dffc;
-}
-
-/* === Animation === */
-@keyframes fadeInSlide {
-  from {
-    opacity: 0;
-    transform: translateY(-20%);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* === Status Icon Styling (you can customize these) === */
-.statusIcon {
-  margin-right: 0.4rem;
-  font-size: 1.2rem;
-}
-
-/* === Responsive === */
-@media (max-width: 768px) {
-  .filters {
-    flex-direction: column;
-  }
-
-  .bottomNav {
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
+.dropdownMenu button:hover {
+  background-color: #f1f9ff;
 }

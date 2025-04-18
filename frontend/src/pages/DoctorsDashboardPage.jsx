@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import styles from './DoctorsDashboardPage.module.css'; // Import the final CSS module
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faNotesMedical, faHeartbeat, faUserMd, faFlask, faVial, faPills, faEnvelope, faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 
 function DashboardPage() {
     const navigate = useNavigate();
@@ -107,8 +109,8 @@ function DashboardPage() {
         return <td>{icons.length > 0 ? icons : '-'}</td>;
     };
 
-    return (
-        <div className={styles.dashboardContainer}>
+return (
+    <div className={styles.dashboardContainer}>
 
             {showGreetingToast && (
                 <div className={styles.greetingToast}>
@@ -181,17 +183,39 @@ function DashboardPage() {
                 <div className={styles.widgetBox}>📈 მაღალი რისკის პაციენტების მონიტორინგი</div>
             </section>
 
-            <nav className={styles.bottomNav}>
-                <button>ლაბორატორია</button>
-                <button>CATH ლაბი</button>
-                <button>ქირურგია</button>
-                <button>ინსტრუმენტული კვლევები</button>
-                <button>მედიკამენტები</button>
-                <button>კონსულტაციები</button>
-            </nav>
+            <div className={styles.dropdownWrapper}>
+                <button className={styles.dropdownToggle}>მენიუ ▾</button>
+                <div className={styles.dropdownMenu}>
+                    <button><FontAwesomeIcon icon={faNotesMedical} /> ორდერები</button>
+                    <button><FontAwesomeIcon icon={faHeartbeat} /> CATH ლაბი</button>
+                    <button><FontAwesomeIcon icon={faUserMd} /> ქირურგია</button>
+                    <button><FontAwesomeIcon icon={faFlask} /> ლაბორატორია</button>
+                    <button><FontAwesomeIcon icon={faVial} /> ინსტრუმენტული კვლევები</button>
+                    <button><FontAwesomeIcon icon={faPills} /> მედიკამენტები</button>
+                    <button><FontAwesomeIcon icon={faEnvelope} /> კონსულტაციები</button>
+                    <button><FontAwesomeIcon icon={faCalendarAlt} /> განრიგი</button>
+                </div>
+            </div>
+  <div className={styles.dropdownWrapper}>
+    <button className={styles.dropdownToggle}>მენიუ ▾</button>
+    <div className={styles.dropdownMenu}>
+      <button>📝 ორდერები</button>
+      <button>❤️ CATH ლაბი</button>
+      <button>⚕️ ქირურგია</button>
+      <button>🧪 ლაბორატორია</button>
+      <button>🔬 ინსტრუმენტული კვლევები</button>
+      <button>💊 მედიკამენტები</button>
+      <button>📨 კონსულტაციები</button>
+      <button>📅 განრიგი</button>
+    </div>
+  </div>
 
-        </div>
-    );
+            <div className={styles.footer}>
+            
+                    &copy; 2025 Irine Cardiology Emergency Centre. All rights reserved.
+            </div>
+            </div>
+        );
 }
-
-export default DashboardPage;
+    
+    export default DashboardPage;
